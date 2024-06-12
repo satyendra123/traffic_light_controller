@@ -1,3 +1,4 @@
+#EXAMPLE-1 traffic light controller which changes the color depends upon the downstep counter. it changes the color and countdown the number 
 import time
 from machine import UART
 
@@ -41,3 +42,5 @@ def traffic_light_controller():
 
 # Run the traffic light controller
 traffic_light_controller()
+
+#EXAMPLE-2 in this we have also changes the arrow direction , colour and countdown
