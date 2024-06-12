@@ -43,4 +43,99 @@ def traffic_light_controller():
 # Run the traffic light controller
 traffic_light_controller()
 
-#EXAMPLE-2 in this we have also changes the arrow direction , colour and countdown
+#EXAMPLE-2 in this we have also changes the arrow direction , colour and countdown. we are passing it as a parameter through a function. 
+import time
+from machine import UART
+
+uart = UART(2, baudrate=9600, tx=17, rx=16)
+
+def sendAvailableSlots(slots, color, direction):
+    slots_str = f'{slots:02d}'
+    message = f'|C|1|4|1|28-0-#{direction}#{color}{slots_str}|'
+    print(f"Sending message: {message}")
+    uart.write(message.encode('ascii'))
+
+def traffic_light_controller():
+    while True:
+        # Red light
+        countdown = 30
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'R', 'd')  # Send countdown as available slots with red color and down arrow
+            time.sleep(1)
+            countdown -= 1
+        
+        # Red + yellow light (transition)
+        countdown = 4
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'Y', 'd')  # Send countdown as available slots with yellow color and down arrow
+            time.sleep(1)
+            countdown -= 1
+        
+        # Green light
+        countdown = 50
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'G', 'u')  # Send countdown as available slots with green color and up arrow
+            time.sleep(1)
+            countdown -= 1
+        
+        # Yellow light
+        countdown = 4
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'Y', 'd')  # Send countdown as available slots with yellow color and down arrow
+            time.sleep(1)
+            countdown -= 1
+
+# Call the traffic_light_controller() function directly
+traffic_light_controller()
+
+#EXAMPLE-3 in arduino how can i do the same thing
+void setup() {
+  Serial.begin(9600); // Start serial communication at 9600 baud rate
+}
+
+void sendAvailableSlots(int slots, char color, char direction) {
+  String slots_str = String(slots, DEC);
+  String message = "|C|1|4|1|28-0-#" + String(direction) + "#" + String(color) + slots_str + "|";
+  Serial.println("Sending message: " + message);
+  Serial.println(message); // Send the message over serial
+}
+
+void traffic_light_controller() {
+  while (true) {
+    // Red light
+    int countdown = 30;
+    while (countdown > 0) {
+      sendAvailableSlots(countdown, 'R', 'd'); // Send countdown as available slots with red color and down arrow
+      delay(1000);
+      countdown--;
+    }
+
+    // Red + yellow light (transition)
+    countdown = 4;
+    while (countdown > 0) {
+      sendAvailableSlots(countdown, 'Y', 'd'); // Send countdown as available slots with yellow color and down arrow
+      delay(1000);
+      countdown--;
+    }
+
+    // Green light
+    countdown = 50;
+    while (countdown > 0) {
+      sendAvailableSlots(countdown, 'G', 'u'); // Send countdown as available slots with green color and up arrow
+      delay(1000);
+      countdown--;
+    }
+
+    // Yellow light
+    countdown = 4;
+    while (countdown > 0) {
+      sendAvailableSlots(countdown, 'Y', 'd'); // Send countdown as available slots with yellow color and down arrow
+      delay(1000);
+      countdown--;
+    }
+  }
+}
+
+void loop() {
+  traffic_light_controller();
+}
