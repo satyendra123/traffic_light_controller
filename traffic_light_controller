@@ -1,0 +1,43 @@
+import time
+from machine import UART
+
+uart = UART(2, baudrate=9600, tx=17, rx=16)
+
+def sendAvailableSlots(slots, color):
+    slots_str = f'{slots:02d}'
+    message = f'|C|1|4|1|28-0-#u#{color}{slots_str}|'
+    print(f"Sending message: {message}")
+    uart.write(message.encode('ascii'))
+
+def traffic_light_controller():
+    while True:  # Loop indefinitely
+        # Red light
+        countdown = 30
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'R')  # Send countdown as available slots with red color
+            time.sleep(1)
+            countdown -= 1
+        
+        # Red + yellow light (transition)
+        countdown = 4
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'Y')  # Send countdown as available slots with yellow color
+            time.sleep(1)
+            countdown -= 1
+        
+        # Green light
+        countdown = 50
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'G')  # Send countdown as available slots with green color
+            time.sleep(1)
+            countdown -= 1
+        
+        # Yellow light
+        countdown = 4
+        while countdown > 0:
+            sendAvailableSlots(countdown, 'Y')  # Send countdown as available slots with yellow color
+            time.sleep(1)
+            countdown -= 1
+
+# Run the traffic light controller
+traffic_light_controller()
