@@ -1,4 +1,5 @@
-
+#EXAMPLE-1 i have made this traffic light controller using esp32 and p10 display for supreme court. in this what i have done is sending the data using the protocol to nand sir display card through rs485tottl module using my esp32.
+#in this rs485 rx is connected to esp32 p17, and rs485 tx is connected to esp32 p16.
 import time
 from machine import UART
 
