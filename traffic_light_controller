@@ -1,5 +1,6 @@
 #EXAMPLE-1 i have made this traffic light controller using esp32 and p10 display for supreme court. in this what i have done is sending the data using the protocol to nand sir display card through rs485tottl module using my esp32.
-#in this rs485 rx is connected to esp32 p17, and rs485 tx is connected to esp32 p16.
+#in this rs485 rx is connected to esp32 p17, and rs485 tx is connected to esp32 p16. so humne apne is file ko save karaya hai usko boot.py me save karenge jisse hoga kya ki jaise
+# jaise hi agar power cut down hota hai to mera code run hona band ho jata hai. to mai simply kya karunga ki apne is code ko boot.py me save karakar rakh dunga to ye problem solve ho jayega humara
 import time
 from machine import UART
 
