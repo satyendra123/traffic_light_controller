@@ -48,3 +48,67 @@ def traffic_light_controller():
 
 # Call the traffic_light_controller() function directly
 traffic_light_controller()
+
+#Example-2 python
+Copy code
+import time
+from machine import UART, WDT
+
+# Initialize the UART
+uart = UART(2, baudrate=9600, tx=16, rx=17)
+
+# Initialize the watchdog timer with a timeout of 10 seconds (10000 milliseconds)
+wdt = WDT(timeout=10000)
+
+def sendAvailableSlots(slots, color, direction):
+    if slots == "GO":
+        message = f'|C|1|4|1|28-0-#{direction}#{color}GO|'
+    elif slots == "STOP":
+        message = f'|C|1|4|1|28-0-#{color}STOP|'  # Removed the direction for STOP
+    else:
+        slots_str = f'{slots:02d}'
+        message = f'|C|1|4|1|28-0-#{direction}#{color}{slots_str}|'
+    print(f"Sending message: {message}")
+    uart.write(message.encode('ascii'))
+
+def traffic_light_controller():
+    while True:
+        try:
+            # Red light
+            countdown = 30
+            while countdown > 0:
+                sendAvailableSlots(countdown, 'R', 'u')  # Send countdown as available slots with red color and up arrow
+                time.sleep(1)
+                countdown -= 1
+                wdt.feed()  # Feed the watchdog to reset its timer
+            
+            # Red + yellow light (transition)
+            countdown = 4
+            while countdown > 0:
+                sendAvailableSlots("GO", 'G', 'u')  # Send "GO" message with green color and up arrow
+                time.sleep(1)
+                countdown -= 1
+                wdt.feed()  # Feed the watchdog to reset its timer
+            
+            # Green light
+            countdown = 50
+            while countdown > 0:
+                sendAvailableSlots(countdown, 'G', 'u')  # Send countdown as available slots with green color and up arrow
+                time.sleep(1)
+                countdown -= 1
+                wdt.feed()  # Feed the watchdog to reset its timer
+            
+            # Yellow light
+            countdown = 4
+            while countdown > 0:
+                sendAvailableSlots("STOP", 'R', None)  # Send "STOP" message with red color and no arrow
+                time.sleep(1)
+                countdown -= 1
+                wdt.feed()  # Feed the watchdog to reset its timer
+        except Exception as e:
+            print(f"Error: {e}")
+            time.sleep(5)  # Give some time before retrying
+            machine.reset()  # Reset the ESP32 in case of an error
+
+# Call the traffic_light_controller() function directly
+traffic_light_controller()
