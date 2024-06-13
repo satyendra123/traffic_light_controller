@@ -1,59 +1,14 @@
 #EXAMPLE-1 i have made this traffic light controller using esp32 and p10 display for supreme court. in this what i have done is sending the data using the protocol to nand sir display card through rs485tottl module using my esp32.
 #in this rs485 rx is connected to esp32 p17, and rs485 tx is connected to esp32 p16. so humne apne is file ko save karaya hai usko boot.py me save karenge jisse hoga kya ki jaise
 # jaise hi agar power cut down hota hai to mera code run hona band ho jata hai. to mai simply kya karunga ki apne is code ko boot.py me save karakar rakh dunga to ye problem solve ho jayega humara
+# This file is executed on every boot (including wake-boot from deepsleep)
+#import esp
+#esp.osdebug(None)
+#import webrepl
+#webrepl.start()
+
 import time
-from machine import UART
-
-uart = UART(2, baudrate=9600, tx=16, rx=17)
-
-def sendAvailableSlots(slots, color, direction):
-    if slots == "GO":
-        message = f'|C|1|4|1|28-0-#{direction}#{color}GO|'
-    elif slots == "STOP":
-        message = f'|C|1|4|1|28-0-#{color}STOP|'  # Removed the direction for STOP
-    else:
-        slots_str = f'{slots:02d}'
-        message = f'|C|1|4|1|28-0-#{direction}#{color}{slots_str}|'
-    print(f"Sending message: {message}")
-    uart.write(message.encode('ascii'))
-
-def traffic_light_controller():
-    while True:
-        # Red light
-        countdown = 30
-        while countdown > 0:
-            sendAvailableSlots(countdown, 'R', 'u')  # Send countdown as available slots with red color and up arrow
-            time.sleep(1)
-            countdown -= 1
-        
-        # Red + yellow light (transition)
-        countdown = 4
-        while countdown > 0:
-            sendAvailableSlots("GO", 'G', 'u')  # Send "GO" message with green color and up arrow
-            time.sleep(1)
-            countdown -= 1
-        
-        # Green light
-        countdown = 50
-        while countdown > 0:
-            sendAvailableSlots(countdown, 'G', 'u')  # Send countdown as available slots with green color and up arrow
-            time.sleep(1)
-            countdown -= 1
-        
-        # Yellow light
-        countdown = 4
-        while countdown > 0:
-            sendAvailableSlots("STOP", 'R', None)  # Send "STOP" message with red color and no arrow
-            time.sleep(1)
-            countdown -= 1
-
-# Call the traffic_light_controller() function directly
-traffic_light_controller()
-
-#Example-2 python
-Copy code
-import time
-from machine import UART, WDT
+from machine import UART, WDT, reset
 
 # Initialize the UART
 uart = UART(2, baudrate=9600, tx=16, rx=17)
@@ -109,7 +64,7 @@ def traffic_light_controller():
         except Exception as e:
             print(f"Error: {e}")
             time.sleep(5)  # Give some time before retrying
-            machine.reset()  # Reset the ESP32 in case of an error
+            reset()  # Reset the ESP32 in case of an error
 
 # Call the traffic_light_controller() function directly
 traffic_light_controller()
